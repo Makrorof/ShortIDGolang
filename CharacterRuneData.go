@@ -3,9 +3,7 @@ package ShortID
 import (
 	"errors"
 	"fmt"
-	"log"
 	"math/rand"
-	"time"
 )
 
 type CharacterRuneData struct {
@@ -17,7 +15,7 @@ type CharacterRuneData struct {
 func createCharacterRuneData(characters string, seed int64) (*CharacterRuneData, error) {
 	runes := []rune(characters)
 
-	if len(runes) <= MIN_RUNE_LENGTH {
+	if len(runes) < MIN_RUNE_LENGTH {
 		return nil, fmt.Errorf("characters must be more than %d", MIN_RUNE_LENGTH)
 	}
 
@@ -25,17 +23,9 @@ func createCharacterRuneData(characters string, seed int64) (*CharacterRuneData,
 		return nil, errors.New("must contain unique characters only")
 	}
 
-	newSeed := seed
-	min := time.Now().UnixNano() / 2
-	max := time.Now().UnixNano()
-
-	newRand := rand.New(rand.NewSource(1232131231321))
-	newSeed = newRand.Int63n(max-min) + min
-
-	log.Println("newSeed:", newSeed)
 	return &CharacterRuneData{
 		characters: runes,
-		rand:       rand.New(rand.NewSource(newSeed)),
+		rand:       rand.New(rand.NewSource(seed)),
 		//seed:       seed,
 	}, nil
 }

@@ -2,6 +2,7 @@ package ShortID
 
 import (
 	"log"
+	"math"
 	"sync"
 	"testing"
 	"time"
@@ -12,11 +13,11 @@ func TestRuneDataShuffle(t *testing.T) {
 
 	wg := sync.WaitGroup{}
 
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 55; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			runeData, _ := createCharacterRuneData(DefaultCharacters, time.Now().UnixNano())
+			runeData, _ := createCharacterRuneData(DefaultCharacters, GetSeed())
 
 			runeData.shuffle()
 			str := string(runeData.GetCharacters())
@@ -50,37 +51,116 @@ func TestRuneDataShuffle(t *testing.T) {
 }
 
 func TestBit(t *testing.T) {
-	const SEQUENCE_BITS int64 = 41
-	const NODEID_BITS int64 = 41
 
-	//timeNano := time.Now().UnixNano()
-	var timeNano int64 = 1666395678157808600
+	var datacenterId int64 = 1024
+	var seedGeneratorID int64 = 1024
+	var sequence int64 = 4095
 
-	var nodeID int64 = 20000000
-	var sequence int64 = 20000000
+	log.Println(time.Now().UnixMilli())
+	//1666464163170686300
+	//2802536687000686300
 
-	log.Println("=>", timeNano)
+	for {
+		timestamp := 2802536687000686300 - CUSTOM_EPOCH
 
-	timeNano |= (sequence << SEQUENCE_BITS)
-	timeNano |= (nodeID << NODEID_BITS)
+		log.Println("currentTimestamp =>", timestamp)
 
-	log.Println("=>", timeNano)
+		timestamp <<= TIMESTAMP_LEFT_SHIFT
 
-	log.Println("(sequence) =>", (sequence << SEQUENCE_BITS))
-	log.Println("(nodeID) =>", (nodeID << NODEID_BITS))
-	//1666395678157808600 // normal
-	//1666395678157 812697 // 1-1
-	//1666395 953035 715545
-	//1666395 678157 808601
-	//1666395 678157 808601
-	//1666395 678157 808601
-	//1666395 678159 905753
-	//1666402000349668351
+		log.Println("TIMESTAMP_LEFT_SHIFT =>", timestamp)
 
-	//1666395678157808600
-	//1667596344855340027
-	//1666537240279884795
-	//1666395678828897275
-	//1666395678159909883
-	//1666395678158338043
+		timestamp |= datacenterId << DATACENTER_ID_SHIFT
+		log.Println("DATACENTER_ID_SHIFT =>", timestamp)
+		timestamp |= seedGeneratorID << SEED_GENERATOR_ID_SHIFT
+		log.Println("SEED_GENERATOR_ID_SHIFT =>", timestamp)
+		timestamp |= sequence
+		log.Println("sequence =>", timestamp)
+
+		time.Sleep(time.Second)
+
+		sequence++
+	}
+
+	/*
+		2022/10/22 21:36:45 currentTimestamp => 663454479600
+		2022/10/22 21:36:45 TIMESTAMP_LEFT_SHIFT => 2782729777604198400
+		2022/10/22 21:36:45 DATACENTER_ID_SHIFT => 2782729777604198400
+		2022/10/22 21:36:45 SEED_GENERATOR_ID_SHIFT => 2782729777604198400
+		2022/10/22 21:36:45 sequence => 2782729777604198400
+
+		2022/10/22 21:36:46 currentTimestamp => 664455645900
+		2022/10/22 21:36:46 TIMESTAMP_LEFT_SHIFT => 2786928973420953600
+		2022/10/22 21:36:46 DATACENTER_ID_SHIFT => 2786928973420953600
+		2022/10/22 21:36:46 SEED_GENERATOR_ID_SHIFT => 2786928973420953600
+		2022/10/22 21:36:46 sequence => 2786928973420953601
+	*/
+}
+
+func TestSequence(t *testing.T) {
+	var sequence int64 = 0
+
+	const SEQUENCE_BITS int64 = 12
+	max_sequence_bits := math.Pow(2, float64(SEQUENCE_BITS)) - 1
+
+	for {
+		sequence = (sequence + 1) & int64(max_sequence_bits)
+		log.Println(sequence)
+		//time.Sleep(time.Second)
+
+		if sequence == 0 {
+			break
+		}
+	}
+}
+
+func TestRSG(t *testing.T) {
+	for {
+		log.Println(GetSeed())
+		time.Sleep(time.Second)
+	}
+}
+
+func TestSameRSG(t *testing.T) {
+	list := make([]int64, 0)
+	//sameList := make([]int64, 0)
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < 100000; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			list = append(list, GetSeed())
+		}()
+	}
+
+	wg.Wait()
+
+	for _, left := range list {
+		count := 0
+		for _, right := range list {
+			if left == right {
+				count++
+			}
+		}
+
+		if count >= 2 {
+			log.Println("Same Seed:", left, " Count:", count)
+			t.Fatal("Same seed")
+			//sameList = append(sameList, left)
+		}
+	}
+
+	for _, seed := range list {
+		log.Println(seed)
+	}
+}
+
+func TestShortID(t *testing.T) {
+	shortID, err := CreateShortID("x12", 120)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	log.Println("ID:", shortID.Generate())
 }
