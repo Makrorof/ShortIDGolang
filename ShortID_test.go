@@ -65,13 +65,13 @@ func TestBit(t *testing.T) {
 
 		log.Println("currentTimestamp =>", timestamp)
 
-		timestamp <<= TIMESTAMP_LEFT_SHIFT
+		timestamp <<= p_TIMESTAMP_LEFT_SHIFT
 
 		log.Println("TIMESTAMP_LEFT_SHIFT =>", timestamp)
 
-		timestamp |= datacenterId << DATACENTER_ID_SHIFT
+		timestamp |= datacenterId << p_DATACENTER_ID_SHIFT
 		log.Println("DATACENTER_ID_SHIFT =>", timestamp)
-		timestamp |= seedGeneratorID << SEED_GENERATOR_ID_SHIFT
+		timestamp |= seedGeneratorID << p_SEED_GENERATOR_ID_SHIFT
 		log.Println("SEED_GENERATOR_ID_SHIFT =>", timestamp)
 		timestamp |= sequence
 		log.Println("sequence =>", timestamp)
