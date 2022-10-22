@@ -61,7 +61,7 @@ func TestBit(t *testing.T) {
 	//2802536687000686300
 
 	for {
-		timestamp := 2802536687000686300 - CUSTOM_EPOCH
+		timestamp := 2802536687000686300 - p_CUSTOM_EPOCH
 
 		log.Println("currentTimestamp =>", timestamp)
 

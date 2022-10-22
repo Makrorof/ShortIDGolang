@@ -15,8 +15,8 @@ type CharacterRuneData struct {
 func createCharacterRuneData(characters string, seed int64) (*CharacterRuneData, error) {
 	runes := []rune(characters)
 
-	if len(runes) < MIN_RUNE_LENGTH {
-		return nil, fmt.Errorf("characters must be more than %d", MIN_RUNE_LENGTH)
+	if len(runes) < p_MIN_RUNE_LENGTH {
+		return nil, fmt.Errorf("characters must be more than %d", p_MIN_RUNE_LENGTH)
 	}
 
 	if !checkUniqueRunes(runes) {

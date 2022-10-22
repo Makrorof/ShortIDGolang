@@ -32,7 +32,7 @@ const p_DATACENTER_ID_SHIFT = p_SEQUENCE_BITS + p_SEED_GENERATOR_ID_BITS
 const p_TIMESTAMP_LEFT_SHIFT = p_SEQUENCE_BITS + p_SEED_GENERATOR_ID_BITS + p_DATACENTER_ID_BITS
 
 //GMT: Saturday, 22 October 2022 19:08:19
-const CUSTOM_EPOCH int64 = 1666465699000
+const p_CUSTOM_EPOCH int64 = 1666465699000
 
 type randomSeedGenerator struct {
 	generatorID  int64 //Thread ID
@@ -118,5 +118,5 @@ func (rnd *randomSeedGenerator) waitNextTime() int64 {
 }
 
 func (rnd *randomSeedGenerator) getTime() int64 {
-	return time.Now().UnixMilli() - CUSTOM_EPOCH
+	return time.Now().UnixMilli() - p_CUSTOM_EPOCH
 }

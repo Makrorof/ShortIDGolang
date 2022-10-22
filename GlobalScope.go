@@ -1,6 +1,6 @@
 package ShortID
 
-const MIN_RUNE_LENGTH int = 2
+const p_MIN_RUNE_LENGTH int = 2
 
 //Default URL friendly characters.
 const DefaultCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
